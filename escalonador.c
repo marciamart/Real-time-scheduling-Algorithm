@@ -38,6 +38,10 @@ float testeEscalabilidade(Processo processos[], int n){
     return resultado;
 }
 
+void plotar(int print[], int n){
+    printf("T1 #    *   *   #");
+}
+
 Processo* clonarVetores(Processo* vet, int n) {
     Processo* novo_vetor = (Processo*)malloc(n * sizeof(Processo));
     if (novo_vetor == NULL) {
@@ -48,7 +52,7 @@ Processo* clonarVetores(Processo* vet, int n) {
     return novo_vetor;
 }
 
-void rateMonotic(Processo Processos[], int n){
+void rateMonotic(Processo Processos[], int n, int print[]){
     int tempo_total = maiorDeadline(Processos, n); 
     int tempos_executando[n];
     int tempo_prox_execucao[n];
@@ -73,6 +77,7 @@ void rateMonotic(Processo Processos[], int n){
 
         if(index_do_selecionado != -1){
             printf("Tempo: %d: Processo %d\n", tempo, index_do_selecionado + 1);
+            print[tempo] = index_do_selecionado+1;
             tempos_executando[index_do_selecionado]++;
 
             if(tempos_executando[index_do_selecionado] == Processos[index_do_selecionado].capacidade){
@@ -82,8 +87,10 @@ void rateMonotic(Processo Processos[], int n){
             
         }else{
             printf("Tempo %d: ocioso\n", tempo);
+            print[tempo] = 0;
         }
     }
+    ///printar-------------------------------------------
 }
 
 int edf(Processo processos[], int n, float scalabilityTest) {
@@ -130,6 +137,7 @@ int main(int argc, char *argv[]){
     rewind(file);
     
     Processo *processos = (Processo *)malloc(n * sizeof(Processo));
+    int print[n][2];
 
     fgets(line, sizeof(line), file);
     char *num;
@@ -156,7 +164,9 @@ int main(int argc, char *argv[]){
         printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processos[k].periodo, processos[k].capacidade, processos[k].deadline);
     }
 
-    rateMonotic(processos, n);
+    int *print = (int *)malloc(n * sizeof(int));
+
+    rateMonotic(processos, n, print);
     
     float teste = testeEscalabilidade(processos, n);
     printf("teste: %f", teste);
