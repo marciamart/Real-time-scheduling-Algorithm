@@ -99,12 +99,17 @@ int edf(Processo processos[], int n, float scalabilityTest) {
     int tempo_total = maiorDeadline(processos, n);
     int tempo_total_aux = tempo_total;
     int shortestDeadline = tempo_total_aux + 1;
-    int a[] = {0, 0, 0};
+    // int a[] = {0, 0, 0};
+    int *periodSpace = (int *)malloc(n * sizeof(int));
+
+    for (int i = 0; i < n; i++) {
+        periodSpace[i] = 0;
+    }
 
     while (tempo_total > 0) {
         int actualTask = -1;
         for (int k = 0; k < n; k++) {
-            if (tempo_total_aux - tempo_total >= a[k]) {
+            if (tempo_total_aux - tempo_total >= periodSpace[k]) {
                 if (processosAux[k].deadline < shortestDeadline) {
                     shortestDeadline = processosAux[k].deadline;
                     actualTask = k;
@@ -124,7 +129,7 @@ int edf(Processo processos[], int n, float scalabilityTest) {
         if (processosAux[actualTask].capacidade == 0) {
             //      Acrescenta o D do atual
             //      ptime[actualTask] += 1;
-            a[actualTask] += processos[actualTask].periodo;
+            periodSpace[actualTask] += processos[actualTask].periodo;
             processosAux[actualTask].deadline += processos[actualTask].deadline;
             // ptime[actualTask] += 1;
             processosAux[actualTask].capacidade = processos[actualTask].capacidade;
