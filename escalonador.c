@@ -37,13 +37,13 @@ float testeEscalabilidade(Processo processos[], int n){
     return resultado;
 }
 
-Processo* clonarVetores(Processo* vet, int tamanho) {
-    Processo* novo_vetor = (Processo*)malloc(tamanho * sizeof(Processo));
+Processo* clonarVetores(Processo* vet, int n) {
+    Processo* novo_vetor = (Processo*)malloc(n * sizeof(Processo));
     if (novo_vetor == NULL) {
         printf("Erro ao alocar memória.\n");
         return NULL;
     }
-    memcpy(novo_vetor, vet, tamanho * sizeof(Processo));
+    memcpy(novo_vetor, vet, n * sizeof(Processo));
     return novo_vetor;
 }
 
@@ -59,8 +59,8 @@ void edf(Processo processos[], int n) {
     Processo *processosAux = processos;
     processosAux[1].periodo = 60;
     for (int k = 0; k < n; k++) {
-        printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processos[k].periodo, processos[k].capacidade, processos[k].deadline);
-        printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processosAux[k].periodo, processosAux[k].capacidade, processosAux[k].deadline);
+        // printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processos[k].periodo, processos[k].capacidade, processos[k].deadline);
+        // printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processosAux[k].periodo, processosAux[k].capacidade, processosAux[k].deadline);
     }
 }
 
@@ -103,7 +103,7 @@ int main(int argc, char *argv[]){
 
     float teste = testeEscalabilidade(processos, n);
     printf("teste: %f", teste);
-    
+
     edf(processos, n);
 
     return 0;
