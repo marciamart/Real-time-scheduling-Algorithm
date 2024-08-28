@@ -55,12 +55,36 @@ void rateMonotic(Processo Processos[], int n){
     }
 }
 
-void edf(Processo processos[], int n) {
-    Processo *processosAux = processos;
-    processosAux[1].periodo = 60;
-    for (int k = 0; k < n; k++) {
-        printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processos[k].periodo, processos[k].capacidade, processos[k].deadline);
-        printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processosAux[k].periodo, processosAux[k].capacidade, processosAux[k].deadline);
+int edf(Processo processos[], int n, float scalabilityTest) {
+    if (scalabilityTest > 1) return 0;
+    Processo *processosAux = clonarVetores(processos, n);
+    int tempo_total = maiorDeadline(Processos, n);
+    int tempo_total_aux = tempo_total;
+    int shortestDeadline = tempo_total + 1;
+    int ptime[] = [0, 0, 0];
+    
+    while (tempo_total < 0) {
+        int actualTask = 0;
+        for (int k = 0; k < n; k++) {
+            if (tempo_total_aux - tempo_total < processosAux[k].periodo * ptime[k]) {
+                if (processosAux[k].deadline < shortestDeadline) {
+                    shortestDeadline = processosAux[k].deadline;
+                    actualTask = k;
+                } 
+            }
+        }
+        // subtrai 1 do c do atual
+        processosAux[actualTask].capacidade -= 1;
+        // se c do atual for 0: 
+        if (processosAux[actualTask].capacidade == 0) {
+            //      Acrescenta o D do atual
+            //      ptime[actualTask] += 1;
+            processosAux[actualTask].deadline += processos[actualTask].deadline;
+            ptime[actualTask] += 1;
+            processosAux[actualTask].capacidade = processos[actualTask].capacidade;
+        }
+
+        tempo_total = tempo_total - 1;
     }
 }
 
@@ -104,7 +128,7 @@ int main(int argc, char *argv[]){
     float teste = testeEscalabilidade(processos, n);
     printf("teste: %f", teste);
     
-    edf(processos, n);
+    edf(processos, n, teste);
 
     return 0;
 }
