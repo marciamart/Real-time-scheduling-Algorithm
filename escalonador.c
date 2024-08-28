@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define MAX 999999999 
 
 typedef struct Processo{
     int periodo, capacidade, deadline;
@@ -61,7 +62,7 @@ void rateMonotic(Processo Processos[], int n){
 
     for(int tempo = 0; tempo < tempo_total; tempo++){
         int index_do_selecionado = -1;
-        int menor_periodo = maiorDeadline(Processos, n);
+        int menor_periodo = MAX;
         
         for(int i = 0; i < n; i++){
             if(tempo >= tempo_prox_execucao[i]){
@@ -73,7 +74,7 @@ void rateMonotic(Processo Processos[], int n){
         }
 
         if(index_do_selecionado != -1){
-            printf("Tempo: %d: Processo %d\n", tempo, index_do_selecionado);
+            printf("Tempo: %d: Processo %d\n", tempo, index_do_selecionado + 1);
             tempos_executando[index_do_selecionado]++;
 
             if(tempos_executando[index_do_selecionado] == Processos[index_do_selecionado].capacidade){
