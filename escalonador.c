@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define MAX 999999999 
 
 typedef struct Processo{
     int periodo, capacidade, deadline;
@@ -51,7 +52,39 @@ Processo* clonarVetores(Processo* vet, int tamanho) {
 
 void rateMonotic(Processo Processos[], int n){
     int tempo_total = maiorDeadline(Processos, n); 
+    int tempos_executando[n];
+    int tempo_prox_execucao[n];
+    
+    for(int i = 0; i < n; i++){
+        tempos_executando[i] = 0;
+        tempo_prox_execucao[i] = 0;
+    }
+
     for(int tempo = 0; tempo < tempo_total; tempo++){
+        int index_do_selecionado = -1;
+        int menor_periodo = MAX;
+        
+        for(int i = 0; i < n; i++){
+            if(tempo >= tempo_prox_execucao[i]){
+                if(Processos[i].periodo < menor_periodo){
+                    menor_periodo = Processos[i].periodo;
+                    index_do_selecionado = i;
+                }
+            }
+        }
+
+        if(index_do_selecionado != -1){
+            printf("Tempo: %d: Processo %d\n", tempo, index_do_selecionado + 1);
+            tempos_executando[index_do_selecionado]++;
+
+            if(tempos_executando[index_do_selecionado] == Processos[index_do_selecionado].capacidade){
+                tempo_prox_execucao[index_do_selecionado] = tempo + Processos[index_do_selecionado].periodo;
+                tempos_executando[index_do_selecionado] = 0;
+            }
+            
+        }else{
+            printf("Tempo %d: ocioso\n", tempo);
+        }
     }
 }
 
@@ -125,6 +158,9 @@ int main(int argc, char *argv[]){
         printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processos[k].periodo, processos[k].capacidade, processos[k].deadline);
     }
 
+    //edf(processos, n);
+    rateMonotic(processos, n);
+    
     float teste = testeEscalabilidade(processos, n);
     printf("teste: %f", teste);
     
