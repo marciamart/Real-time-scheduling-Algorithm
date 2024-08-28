@@ -19,7 +19,6 @@ typedef struct Processo{
     int periodo, capacidade, deadline;
 }Processo;
 
-
 float testeEscalabilidade(Processo processos[], int n){
     float resultado = 0;
     for(int i = 0; i < n; i++){
@@ -40,8 +39,6 @@ int main (int argc, char *argv[]){
     rewind(file);
     
     Processo *processos = (Processo *)malloc(n * sizeof(Processo));
-
-
 
     char *num;
 
@@ -71,6 +68,5 @@ int main (int argc, char *argv[]){
         printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processos[k].periodo, processos[k].capacidade, processos[k].deadline);
     }
 
-
     return 0;
-}
+} 
