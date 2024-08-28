@@ -19,6 +19,15 @@ typedef struct Processo{
     int periodo, capacidade, deadline;
 }Processo;
 
+int maiorDeadline(Processo processos[], int n){
+    int maior = processos[0].deadline;
+    for(int i = 0; i < n; i++){
+        if(processos[i].deadline > maior){
+            maior = processos[i].deadline;
+        }
+    }
+    return maior;
+}
 
 float testeEscalabilidade(Processo processos[], int n){
     float resultado = 0;
@@ -40,7 +49,22 @@ Processo* clonarVetores(Processo* vet, int tamanho) {
 
 //Processo* processos_clone = clonarVetores(processos, 3);
 
-int main (int argc, char *argv[]){
+void rateMonotic(Processo Processos[], int n){
+    int tempo_total = maiorDeadline(Processos, n); 
+    for(int tempo = 0; tempo < tempo_total; tempo++){
+    }
+}
+
+void edf(Processo processos[], int n) {
+    Processo *processosAux = processos;
+    processosAux[1].periodo = 60;
+    for (int k = 0; k < n; k++) {
+        printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processos[k].periodo, processos[k].capacidade, processos[k].deadline);
+        printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processosAux[k].periodo, processosAux[k].capacidade, processosAux[k].deadline);
+    }
+}
+
+int main(int argc, char *argv[]){
     FILE *file = fopen(argv[1], "r");
 
     char line[50];
@@ -79,6 +103,8 @@ int main (int argc, char *argv[]){
 
     float teste = testeEscalabilidade(processos, n);
     printf("teste: %f", teste);
+    
+    edf(processos, n);
 
     return 0;
 }
