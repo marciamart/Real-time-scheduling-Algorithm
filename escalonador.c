@@ -40,11 +40,19 @@ float testeEscalabilidade(Processo processos[], int n){
 void rateMonotic(Processo Processos[], int n){
     int tempo_total = maiorDeadline(Processos, n); 
     for(int tempo = 0; tempo < tempo_total; tempo++){
-        
     }
 }
 
-int main (int argc, char *argv[]){
+void edf(Processo processos[], int n) {
+    Processo *processosAux = processos;
+    processosAux[1].periodo = 60;
+    for (int k = 0; k < n; k++) {
+        printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processos[k].periodo, processos[k].capacidade, processos[k].deadline);
+        printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processosAux[k].periodo, processosAux[k].capacidade, processosAux[k].deadline);
+    }
+}
+
+int main(int argc, char *argv[]){
     FILE *file = fopen(argv[1], "r");
 
     char line[50];
@@ -81,6 +89,7 @@ int main (int argc, char *argv[]){
         printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processos[k].periodo, processos[k].capacidade, processos[k].deadline);
     }
 
+    edf(processos, n);
 
     return 0;
-}
+} 
