@@ -32,5 +32,45 @@ float testeEscalabilidade(Processo processos[], int n){
 int main (int argc, char *argv[]){
     FILE *file = fopen(argv[1], "r");
 
+    char line[50];
+    int n = -1;
+    while (fgets(line, sizeof(line), file) != NULL){
+        n++;
+    }
+    rewind(file);
+    
+    Processo *processos = (Processo *)malloc(n * sizeof(Processo));
+
+
+
+    char *num;
+
+    while (fgets(line, sizeof(line), file) != NULL){
+        int i = 0;
+        if (strcmp(line, "F  C   D\n") != 0)
+        {
+            Processo novo;
+            num = strtok(line,"\t");
+            while (num != NULL)
+            {
+                int j = 1;
+                int valor = atoi(num);
+                if (j == 1){novo.periodo = valor;}
+                else if (j == 2){novo.capacidade = valor;}
+                else if (j == 3){novo.deadline = valor;}
+                
+                j++;
+                num = strtok(NULL, "\t");
+            }
+            processos[i] = novo;
+            i++;
+        }
+    }
+
+    for (int k = 0; k < n; k++) {
+        printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processos[k].periodo, processos[k].capacidade, processos[k].deadline);
+    }
+
+
     return 0;
 }
