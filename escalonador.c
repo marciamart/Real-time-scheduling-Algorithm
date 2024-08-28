@@ -19,6 +19,15 @@ typedef struct Processo{
     int periodo, capacidade, deadline;
 }Processo;
 
+int maiorDeadline(Processo processos[], int n){
+    int maior = processos[0].deadline;
+    for(int i = 0; i < n; i++){
+        if(processos[i].deadline > maior){
+            maior = processos[i].deadline;
+        }
+    }
+    return maior;
+}
 
 float testeEscalabilidade(Processo processos[], int n){
     float resultado = 0;
@@ -26,6 +35,13 @@ float testeEscalabilidade(Processo processos[], int n){
         resultado += (float)(processos[i].capacidade/processos[i].periodo);
     }
     return resultado;
+}
+
+void rateMonotic(Processo Processos[], int n){
+    int tempo_total = maiorDeadline(Processos, n); 
+    for(int tempo = 0; tempo < tempo_total; tempo++){
+        
+    }
 }
 
 int main (int argc, char *argv[]){
