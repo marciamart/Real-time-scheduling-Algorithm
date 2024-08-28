@@ -37,6 +37,18 @@ float testeEscalabilidade(Processo processos[], int n){
     return resultado;
 }
 
+Processo* clonarVetores(Processo* vet, int tamanho) {
+    Processo* novo_vetor = (Processo*)malloc(tamanho * sizeof(Processo));
+    if (novo_vetor == NULL) {
+        printf("Erro ao alocar memória.\n");
+        return NULL;
+    }
+    memcpy(novo_vetor, vet, tamanho * sizeof(Processo));
+    return novo_vetor;
+}
+
+//Processo* processos_clone = clonarVetores(processos, 3);
+
 void rateMonotic(Processo Processos[], int n){
     int tempo_total = maiorDeadline(Processos, n); 
     int tempos_executando[n];
@@ -123,6 +135,11 @@ int main(int argc, char *argv[]){
 
     //edf(processos, n);
     rateMonotic(processos, n);
+    
+    float teste = testeEscalabilidade(processos, n);
+    printf("teste: %f", teste);
+    
+   // edf(processos, n);
 
     return 0;
-} 
+}
