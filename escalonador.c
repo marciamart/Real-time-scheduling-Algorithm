@@ -28,6 +28,18 @@ float testeEscalabilidade(Processo processos[], int n){
     return resultado;
 }
 
+Processo* clonarVetores(Processo* vet, int tamanho) {
+    Processo* novo_vetor = (Processo*)malloc(tamanho * sizeof(Processo));
+    if (novo_vetor == NULL) {
+        printf("Erro ao alocar memória.\n");
+        return NULL;
+    }
+    memcpy(novo_vetor, vet, tamanho * sizeof(Processo));
+    return novo_vetor;
+}
+
+//Processo* processos_clone = clonarVetores(processos, 3);
+
 int main (int argc, char *argv[]){
     FILE *file = fopen(argv[1], "r");
 
@@ -65,6 +77,8 @@ int main (int argc, char *argv[]){
         printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processos[k].periodo, processos[k].capacidade, processos[k].deadline);
     }
 
+    float teste = testeEscalabilidade(processos, n);
+    printf("teste: %f", teste);
 
     return 0;
 }
