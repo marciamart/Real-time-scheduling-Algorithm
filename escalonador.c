@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <math.h>
+
 
 typedef struct Processo{
     int periodo, capacidade, deadline;
@@ -30,16 +32,36 @@ int maiorDeadline(Processo processos[], int n){
     return maior;
 }
 
-float testeEscalabilidade(Processo processos[], int n){
+void testeEscalabilidade(Processo processos[], int n, char prioridade ){
     float resultado = 0;
     for(int i = 0; i < n; i++){
         resultado += ((float)processos[i].capacidade/(float)processos[i].periodo);
     }
-    return resultado;
+    if(prioridade == 'F'){
+        float taxa = n*(pow(2, 1.0/n) - 1);
+        printf("Teste de Escalabilidade com Prioridade fixa: %.2f menor ou igual a %.2f\n", resultado, taxa);
+    }else{
+        printf("Teste de Escalabilidade com Prioridade variavel: %.2f menor ou igual a 1\n", resultado);
+    }
 }
 
-void plotar(int print[], int n){
-    printf("T1 #    *   *   #");
+void plotar(int print[], int n, int tempo_total){
+    for (int i = 0; i < n; i++){
+        printf("T%i\t", i+1);
+        for (int j = 0; j < tempo_total; j++)
+        {
+            if (print[j] == i+1){
+                printf("#\t");
+            }else{printf("-\t");}
+        }
+        printf("\n");
+    }
+    printf("T\t");
+    for (int j = 0; j < tempo_total; j++)
+    {
+        printf("%i\t", j);
+        
+    }
 }
 
 Processo* clonarVetores(Processo* vet, int n) {
@@ -52,15 +74,17 @@ Processo* clonarVetores(Processo* vet, int n) {
     return novo_vetor;
 }
 
-void rateMonotic(Processo Processos[], int n, int print[]){
+void rateMonotic(Processo Processos[], int n){
     int tempo_total = maiorDeadline(Processos, n); 
-    int tempos_executando[n];
-    int tempo_prox_execucao[n];
+    int *tempos_executando = (int *)malloc(n * sizeof(int));
+    int *tempo_prox_execucao = (int *)malloc(n * sizeof(int));
     
     for(int i = 0; i < n; i++){
         tempos_executando[i] = 0;
         tempo_prox_execucao[i] = 0;
     }
+
+    int *print = (int *)malloc(tempo_total * sizeof(int));
 
     for(int tempo = 0; tempo < tempo_total; tempo++){
         int index_do_selecionado = -1;
@@ -76,7 +100,6 @@ void rateMonotic(Processo Processos[], int n, int print[]){
         }
 
         if(index_do_selecionado != -1){
-            printf("Tempo: %d: Processo %d\n", tempo, index_do_selecionado + 1);
             print[tempo] = index_do_selecionado+1;
             tempos_executando[index_do_selecionado]++;
 
@@ -86,21 +109,20 @@ void rateMonotic(Processo Processos[], int n, int print[]){
             }
             
         }else{
-            printf("Tempo %d: ocioso\n", tempo);
             print[tempo] = 0;
         }
     }
-    ///printar-------------------------------------------
+    plotar(print, n, tempo_total);
 }
 
-int edf(Processo processos[], int n, float scalabilityTest) {
-    // if (scalabilityTest > 1) return 0;
+int edf(Processo processos[], int n) {
     Processo *processosAux = clonarVetores(processos, n);
     int tempo_total = maiorDeadline(processos, n);
     int tempo_total_aux = tempo_total;
     int shortestDeadline = tempo_total_aux + 1;
-    // int a[] = {0, 0, 0};
+    
     int *periodSpace = (int *)malloc(n * sizeof(int));
+    int *print = (int *)malloc(tempo_total * sizeof(int));
 
     for (int i = 0; i < n; i++) {
         periodSpace[i] = 0;
@@ -117,27 +139,23 @@ int edf(Processo processos[], int n, float scalabilityTest) {
             }
         }
         if (actualTask < 0) {
-            printf("Tempo %d: ocioso\n", tempo_total);
+            print[20 - tempo_total] = 0;
             tempo_total = tempo_total - 1;
             shortestDeadline = tempo_total_aux + 1;
             continue;
         }
-        // subtrai 1 do c do atual
         processosAux[actualTask].capacidade -= 1;
-        printf("Tempo: %d: Processo %d\n", tempo_total, actualTask + 1);
-        // se c do atual for 0: 
+        print[20 - tempo_total] = actualTask + 1;
         if (processosAux[actualTask].capacidade == 0) {
-            //      Acrescenta o D do atual
-            //      ptime[actualTask] += 1;
             periodSpace[actualTask] += processos[actualTask].periodo;
             processosAux[actualTask].deadline += processos[actualTask].deadline;
-            // ptime[actualTask] += 1;
             processosAux[actualTask].capacidade = processos[actualTask].capacidade;
         }
 
         shortestDeadline = tempo_total_aux + 1;
         tempo_total = tempo_total - 1;
     }
+    plotar(print, n, tempo_total_aux);
 }
 
 int main(int argc, char *argv[]){
@@ -151,7 +169,6 @@ int main(int argc, char *argv[]){
     rewind(file);
     
     Processo *processos = (Processo *)malloc(n * sizeof(Processo));
-    int print[n][2];
 
     fgets(line, sizeof(line), file);
     char *num;
@@ -174,18 +191,20 @@ int main(int argc, char *argv[]){
         i++;
     }
 
+    printf("\n");
     for (int k = 0; k < n; k++) {
         printf("Processo %d: Periodo=%d, Capacidade=%d, Deadline=%d\n", k + 1, processos[k].periodo, processos[k].capacidade, processos[k].deadline);
     }
 
-    int *print = (int *)malloc(n * sizeof(int));
+    
+    printf("\n================================== Rate Monotonic ==================================\n\n");
+    testeEscalabilidade(processos, n, 'F');
+    rateMonotic(processos, n);
+    
 
-    rateMonotic(processos, n, print);
-    
-    float teste = testeEscalabilidade(processos, n);
-    printf("teste: %f", teste);
-    
-    edf(processos, n, teste);
+    printf("\n\n================================== Earliest Deadline First ==================================\n\n");
+    testeEscalabilidade(processos, n, 'V');
+    edf(processos, n);
 
     return 0;
 }
