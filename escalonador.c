@@ -122,6 +122,7 @@ int edf(Processo processos[], int n) {
     int shortestDeadline = tempo_total_aux + 1;
     
     int *periodSpace = (int *)malloc(n * sizeof(int));
+    int onRoad = -1;
     int *print = (int *)malloc(tempo_total * sizeof(int));
 
     for (int i = 0; i < n; i++) {
@@ -138,21 +139,28 @@ int edf(Processo processos[], int n) {
                 } 
             }
         }
+        if (actualTask < 0 && onRoad >= 0) {
+            shortestDeadline = processosAux[onRoad].deadline;
+            actualTask = onRoad;
+            onRoad = -1;
+        }
         if (actualTask < 0) {
-            print[20 - tempo_total] = 0;
+            print[tempo_total_aux - tempo_total] = 0;
             tempo_total = tempo_total - 1;
             shortestDeadline = tempo_total_aux + 1;
             continue;
         }
         processosAux[actualTask].capacidade -= 1;
-        print[20 - tempo_total] = actualTask + 1;
+        print[tempo_total_aux - tempo_total] = actualTask + 1;
         if (processosAux[actualTask].capacidade == 0) {
             periodSpace[actualTask] += processos[actualTask].periodo;
             processosAux[actualTask].deadline += processos[actualTask].deadline;
             processosAux[actualTask].capacidade = processos[actualTask].capacidade;
+            shortestDeadline = tempo_total_aux + 1;
+        } else {
+            shortestDeadline = processosAux[actualTask].deadline;
+            onRoad = actualTask;
         }
-
-        shortestDeadline = tempo_total_aux + 1;
         tempo_total = tempo_total - 1;
     }
     plotar(print, n, tempo_total_aux);
