@@ -74,44 +74,42 @@ Processo* clonarVetores(Processo* vet, int n) {
     return novo_vetor;
 }
 
-void rateMonotic(Processo Processos[], int n){
-    int tempo_total = maiorDeadline(Processos, n); 
+void rateMonotic(Processo processos[], int n) {
+    int tempo_total = maiorDeadline(processos, n); 
     int *tempos_executando = (int *)malloc(n * sizeof(int));
     int *tempo_prox_execucao = (int *)malloc(n * sizeof(int));
-    
+    int *print = (int *)malloc(tempo_total * sizeof(int));
+    int *tempo_restante = (int *)malloc(n * sizeof(int));
+
     for(int i = 0; i < n; i++){
         tempos_executando[i] = 0;
         tempo_prox_execucao[i] = 0;
     }
 
-    int *print = (int *)malloc(tempo_total * sizeof(int));
 
     for(int tempo = 0; tempo < tempo_total; tempo++){
         int index_do_selecionado = -1;
         int menor_periodo = INT_MAX;
-        
+
         for(int i = 0; i < n; i++){
-            if(tempo >= tempo_prox_execucao[i]){
-                if(Processos[i].periodo < menor_periodo){
-                    menor_periodo = Processos[i].periodo;
-                    index_do_selecionado = i;
-                }
+            if(tempo % processos[i].periodo == 0){
+                tempo_restante[i] = processos[i].capacidade;
+            }
+
+            if(tempo_restante[i] > 0 && processos[i].periodo < menor_periodo){
+                menor_periodo = processos[i].periodo;
+                index_do_selecionado = i;
             }
         }
 
         if(index_do_selecionado != -1){
-            print[tempo] = index_do_selecionado+1;
-            tempos_executando[index_do_selecionado]++;
-
-            if(tempos_executando[index_do_selecionado] == Processos[index_do_selecionado].capacidade){
-                tempo_prox_execucao[index_do_selecionado] = tempo + Processos[index_do_selecionado].periodo;
-                tempos_executando[index_do_selecionado] = 0;
-            }
-            
+            print[tempo] = index_do_selecionado + 1;
+            tempo_restante[index_do_selecionado]--;
         }else{
             print[tempo] = 0;
         }
     }
+
     plotar(print, n, tempo_total);
 }
 
